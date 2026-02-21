@@ -1,5 +1,5 @@
-/*h1 {
-    font-size: 50pt;
+h1 {
+    font-size: 27pt;
     padding-left: 5rem;
     width: 60rem;
 }
@@ -9,6 +9,6 @@
 }
 
 .hero-image{
-    width: 300px;
+    width: 245px;
     height: auto;
 }
