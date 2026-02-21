@@ -6,6 +6,8 @@ body{
     margin: 0;
 }
 
+
+
 .nav{
     background-color: #881ec2;
     color: white;
@@ -15,6 +17,25 @@ body{
     justify-content: center;
     align-items: center;
     font-size: 1.3em;
+}
+
+.navbar-content{
+    display: flex;
+    justify-content: space-between;
+    color: white;
+    align-items: center;
+    padding: 10px 20px;
+    font-weight: bold;
+}
+.navbar-content a {
+    color: white;  
+    font-weight: bold;        /* Forces links inside navbar-content to white */
+    text-decoration: none; /* Optional: remove underline */
+}
+.nav a {
+    color: white;
+    font-weight: bold;
+    text-decoration: none;
 }
 
 .list{
