@@ -5,14 +5,14 @@ import "./Navbar.css"
 function Navbar() {
     return(
         <>
-        <nav class="nav">
-            <ul class="list">
-                <li><Link to="/"><img src={viteLogo} className="nav-logo"/></Link></li>
-                <li className="WebName"><Link to="/">uVisible</Link></li>
-                <li><Link to="/Login">Login</Link></li>
-                <li><Link to="/Taskboard">Taskboard</Link></li>
-            </ul>
-        </nav>
+        <nav className="nav">
+        <ul className="list">
+            <li><Link to="/"><img src={viteLogo} className="nav-logo"/></Link></li>
+            <li className="navbar-content"><Link to="/">uVisible</Link></li>
+            <li className="navbar-content"><Link to="/Login">Login</Link></li>
+            <li className="navbar-content"><Link to="/Taskboard">Taskboard</Link></li>
+        </ul>
+    </nav>
         </>
     );
 }
