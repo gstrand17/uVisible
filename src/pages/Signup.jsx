@@ -140,19 +140,15 @@ function Signup() {
                                 { memName: "", is_adult: false, labor_limit: 1 }
                             ])
                         }>
-                        Add Another Family Member
+                        Add Family Member
                     </button>
-
                     <button className='signupbutton' type="submit">
-                            Create account
+                        <b>Create account</b>
                     </button>
-
-
+                    <br />
                 </form>
-
             </div>
         </>
-
     )
 }
 export default Signup;
