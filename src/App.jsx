@@ -7,7 +7,6 @@ import Taskboard from './pages/Taskboard'
 function App() {
     return (
         <>
-            <h1>hello world</h1>
             <BrowserRouter>
                 <Routes>
                     <Route path="/" element={<Home/>} />
