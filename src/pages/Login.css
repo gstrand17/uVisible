@@ -42,8 +42,24 @@ input {
     width: 100%;
 }
 
-
 .signupbutton {
+    background: linear-gradient(90deg, #7c3aed 0%, #5b21b6 100%);
+    color: white;
+    border: none;
+    border-radius: 14px;
+    padding: 12px 28px;
+    font-size: 1.2em;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(124, 58, 237, 0.2);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    display: block;
+    margin: 20px auto;
 
 
+}
+
+.signupbutton:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(124, 58, 237, 0.3);
 }
