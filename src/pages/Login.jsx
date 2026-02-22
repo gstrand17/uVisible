@@ -62,9 +62,9 @@ function Login() {
             }));
         setIsSubmitting(false);
         navigate("/Taskboard");
-    };
-
-    return (
+        localStorage.removeItem("activeMember");
+        };
+    return(
         <>
             <Navbar />
             <br />
