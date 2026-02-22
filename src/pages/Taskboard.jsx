@@ -3,6 +3,10 @@ import './Taskboard.css'
 import night from "../assets/night.png" 
 import morning from "../assets/morning.png"
 import afternoon from "../assets/afternoon.png"
+import lowbat from "../assets/lowbat .png"
+import mediumbat from "../assets/mediumbat .png"
+import highbat from "../assets/highbat .png"
+import extremebat from "../assets/extremebat.png"
 import Confetti from '../Confetti';
 import React,{ useState, useEffect } from 'react';
 import { supabase } from "../supabaseClient";
@@ -38,7 +42,7 @@ function MemberSelectionModal({ members, onSelect }) {
     );
 }
 
-function MemberSelection({ member, periodImages, setShowConfetti }){
+function MemberSelection({ member, periodImages, batteryImages, setShowConfetti }){
     console.log("Rendering member:", member);
     const [assignedTasks, setAssignedTasks] = useState([]);
 
@@ -52,7 +56,8 @@ function MemberSelection({ member, periodImages, setShowConfetti }){
           TaskTemplate (
             title,
             duration,
-            time_day
+            time_day,
+            labor
           )
         `)
                 .eq("memID", member.memID);
@@ -92,6 +97,11 @@ function MemberSelection({ member, periodImages, setShowConfetti }){
                                          ? `${Math.floor(task.duration / 60)} hr ${task.duration % 60} min`
                                          : `${task.duration} min`}
                                 </button>
+                                <img
+                                    src={batteryImages[task.labor]}
+                                    alt={task.labor}
+                                    className="batteryIcon"
+                                />
                                 <img src={periodImages[task.time_day]}
                                      alt={task.time_day}
                                      className="periodIcon"/>
@@ -112,6 +122,16 @@ function Taskboard() {
         morning: morning,
         afternoon: afternoon,
         night: night
+    };
+    const batteryImages = {
+        1: lowbat,
+        2: mediumbat,
+        3: highbat,
+        4: extremebat,
+        low: lowbat,
+        medium: mediumbat,
+        high: highbat,
+        extreme: extremebat,
     };
     const [showConfetti, setShowConfetti] = React.useState(false);
     React.useEffect(() => {
@@ -181,6 +201,7 @@ function Taskboard() {
                         key={activeMember.memID}
                         member={activeMember}
                         periodImages={periodImages}
+                        batteryImages={batteryImages}
                         setShowConfetti={setShowConfetti}
                     />
 
@@ -191,6 +212,7 @@ function Taskboard() {
                                 key={member.memID}
                                 member={member}
                                 periodImages={periodImages}
+                                batteryImages={batteryImages}
                                 setShowConfetti={setShowConfetti}
                             />
                         ))}
