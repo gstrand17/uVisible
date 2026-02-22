@@ -2,8 +2,9 @@ import React, { useState } from "react";
 import ReactDOM from "react-dom";
 // import "../App.css";
 import "./Taskboard.css";
+import { supabase } from "../supabaseClient"; // make sure you import your supabase client at the top
 
-function TaskInput({ onClose }) {
+function TaskInput({ onClose, famID }) {
   const [formData, setFormData] = useState({
     title: "",
     duration: "",
@@ -22,10 +23,36 @@ function TaskInput({ onClose }) {
     });
   };
 
-  const handleSubmit = () => {
-    console.log(formData);
-    onClose();
-  };
+
+
+const handleSubmit = async () => {
+  if (!famID) {
+    alert("Family ID not found!");
+    return;
+  }
+
+  const { data, error } = await supabase
+    .from("TaskTemplate")
+    .insert([{
+      famID,                     // foreign key
+      title: formData.title,
+      duration: Number(formData.duration),
+      labor: formData.labor,
+      time_day: formData.time_day,
+      freq: formData.freq,
+      spec_date: formData.freq === "date-specific" ? formData.spec_date : null,
+      adult_only: formData.adult_only,
+    }]);
+
+  if (error) {
+    console.error("TASK INSERT ERROR:", error);
+    alert(error.message);
+    return;
+  }
+
+  console.log("Inserted task:", data);
+  onClose();
+};
 
   return ReactDOM.createPortal(
     <div className="modal-overlay" onClick={onClose}>
