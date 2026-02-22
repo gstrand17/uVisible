@@ -6,6 +6,8 @@ import afternoon from "../assets/afternoon.png"
 import Confetti from '../Confetti';
 import React, { useState, useEffect } from 'react';
 import { supabase } from "../supabaseClient";
+import TaskInput from "./TaskInput";
+
 
 function MemberSelection({ member, periodImages, setShowConfetti }){
     console.log("Rendering member:", member);
@@ -75,6 +77,7 @@ function MemberSelection({ member, periodImages, setShowConfetti }){
 
 
 function Taskboard() {
+    const [isTaskInputOpen, setIsTaskInputOpen] = React.useState(false);
 
     const periodImages = {
         morning: morning,
@@ -98,7 +101,7 @@ function Taskboard() {
 
             if (!family) return;
 
-            const {data, error} = await supabase
+            const { data, error } = await supabase
                 .from("Members")
                 .select("*")
                 .eq("familyID", family.famID);
@@ -134,7 +137,12 @@ function Taskboard() {
                     ))}
                 </select>
             </div>
-            <button className="addTaskButton">+ Add Task</button>
+            <button
+                className="addTaskButton"
+                onClick={() => setIsTaskInputOpen(true)}
+            >
+                + Add Task
+            </button>
             {members.map(member => (
                 <MemberSelection
                     key={member.memID}
@@ -143,7 +151,8 @@ function Taskboard() {
                     setShowConfetti={setShowConfetti}
                 />
             ))}
-            {showConfetti && <Confetti onComplete={() => setShowConfetti(false)}/>}
+            {showConfetti && <Confetti onComplete={() => setShowConfetti(false)} />}
+            {isTaskInputOpen && <TaskInput onClose={() => setIsTaskInputOpen(false)} />}
         </>
     )
 }
