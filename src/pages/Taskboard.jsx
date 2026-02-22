@@ -4,7 +4,8 @@ import night from "../assets/night.png"
 import morning from "../assets/morning.png"
 import afternoon from "../assets/afternoon.png"
 import Confetti from '../Confetti';
-import React, { useState, useEffect } from 'react';
+import React, {useState}, { useState, useEffect } from 'react';
+import { supabase } from "../supabaseClient";
 import { supabase } from "../supabaseClient";
 import TaskInput from "./TaskInput";
 
