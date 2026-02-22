@@ -9,14 +9,19 @@ body{
 
 
 .nav{
-    background-color: #a78bfa;
-    color: white;
+    background-color: white;
     position: fixed;
-    top: 0px;
+    top: 0;
+    left: 0;
     width: 100%;
-    height: 17%;
+
+    height: 140px;       /* pick a fixed height that fits your logo */
+    z-index: 1000;       /* ensures content never covers it */
+
+    display: flex;
     justify-content: center;
     align-items: center;
+
     font-size: 1.3em;
 }
 

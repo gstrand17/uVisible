@@ -3,6 +3,10 @@ import './Taskboard.css'
 import night from "../assets/night.png" 
 import morning from "../assets/morning.png"
 import afternoon from "../assets/afternoon.png"
+import lowbat from "../assets/lowbat .png"
+import mediumbat from "../assets/mediumbat .png"
+import highbat from "../assets/highbat .png"
+import extremebat from "../assets/extremebat.png"
 import Confetti from '../Confetti';
 import React,{ useState, useEffect } from 'react';
 import { supabase } from "../supabaseClient";
@@ -10,10 +14,12 @@ import TaskInput from "./TaskInput";
 
 function MemberSelectionModal({ members, onSelect }) {
     const randomColor = () =>
+        // eslint-disable-next-line react-hooks/purity
         "#" + Math.floor(Math.random()*16777215).toString(16);
 
     return (
         <div className="modal-overlay-user">
+
             <div className="modal-content-user">
                 <h2>Who's contributing?</h2>
                 <div className="circle-container">
@@ -36,8 +42,8 @@ function MemberSelectionModal({ members, onSelect }) {
     );
 }
 
-function MemberSelection({ member, members, periodImages, setShowConfetti }) {
-
+function MemberSelection({ member, periodImages, batteryImages, setShowConfetti }){
+    console.log("Rendering member:", member);
     const [assignedTasks, setAssignedTasks] = useState([]);
     const [openMenu, setOpenMenu] = useState(null);
 
@@ -46,15 +52,20 @@ function MemberSelection({ member, members, periodImages, setShowConfetti }) {
             const { data, error } = await supabase
                 .from("TaskAssigned")
                 .select(`
-                    assignmentID,
-                    complete,
-                    TaskTemplate (
-                        title,
-                        duration,
-                        time_day
-                    )
-                `)
+          assignmentID,
+          complete,
+          TaskTemplate (
+            title,
+            duration,
+            time_day,
+            labor
+          )
+        `)
                 .eq("memID", member.memID);
+            console.log("Member:", member.memName);
+            console.log("memID:", member.memID);
+            console.log("Assigned data:", data);
+            console.log("Error:", error);
 
             if (!error) {
                 setAssignedTasks(data);
@@ -79,9 +90,27 @@ function MemberSelection({ member, members, periodImages, setShowConfetti }) {
 
                         return (
                             <div className="taskButtonWide" key={assignment.assignmentID}>
+                                <input type="checkbox"
+                                       className="taskCheckbox"
+                                       checked={assignment.complete}
+                                       onChange={() =>setShowConfetti(true)}/>
+                                <span className="taskName">{task.title}</span>
+                                <button className="timeButtonInner" style={{color: '#fff'}}>
+                                    {task.duration > 60
+                                         ? `${Math.floor(task.duration / 60)} hr ${task.duration % 60} min`
+                                         : `${task.duration} min`}
+                                </button>
+                                <img
+                                    src={batteryImages[task.labor]}
+                                    alt={task.labor}
+                                    className="batteryIcon"
+                                />
+                                <img src={periodImages[task.time_day]}
+                                     alt={task.time_day}
+                                     className="periodIcon"/>
                                 {/* ✅ Dropdown wrapper */}
                                 <div style={{ position: "relative", width: "100%", display: "flex", alignItems: "center", gap: "12px" }}>
-                                    
+
                                     <input
                                         type="checkbox"
                                         className="taskCheckbox"
@@ -196,10 +225,18 @@ function Taskboard() {
         afternoon: afternoon,
         night: night
     };
-
-    const [showConfetti, setShowConfetti] = useState(false);
-
-    useEffect(() => {
+    const batteryImages = {
+        1: lowbat,
+        2: mediumbat,
+        3: highbat,
+        4: extremebat,
+        low: lowbat,
+        medium: mediumbat,
+        high: highbat,
+        extreme: extremebat,
+    };
+    const [showConfetti, setShowConfetti] = React.useState(false);
+    React.useEffect(() => {
         if (showConfetti) {
             const timer = setTimeout(() => setShowConfetti(false), 1800);
             return () => clearTimeout(timer);
@@ -231,6 +268,7 @@ function Taskboard() {
     const famData = JSON.parse(localStorage.getItem("family"));
     const famID = famData?.famID;
 
+
     const [activeMember, setActiveMember] = useState(() => {
         const stored = localStorage.getItem("activeMember");
         return stored ? JSON.parse(stored) : null;
@@ -254,11 +292,7 @@ function Taskboard() {
                     onSelect={handleMemberSelect}
                 />
             )}
-
-            <h1 className="heading">
-                Welcome back, {activeMember?.memName}
-            </h1>
-
+            <h1 className="heading">Welcome back, {activeMember?.memName}</h1>
             <button
                 className="addTaskButton"
                 onClick={() => setIsTaskInputOpen(true)}
@@ -273,6 +307,7 @@ function Taskboard() {
                         member={activeMember}
                         members={members}
                         periodImages={periodImages}
+                        batteryImages={batteryImages}
                         setShowConfetti={setShowConfetti}
                     />
 
@@ -284,6 +319,7 @@ function Taskboard() {
                                 member={member}
                                 members={members}
                                 periodImages={periodImages}
+                                batteryImages={batteryImages}
                                 setShowConfetti={setShowConfetti}
                             />
                         ))}
