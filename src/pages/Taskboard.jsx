@@ -5,8 +5,11 @@ import morning from "../assets/morning.png"
 import afternoon from "../assets/afternoon.png"
 import Confetti from '../Confetti';
 import React from 'react';
+import TaskInput from "./TaskInput";
+
 
 function Taskboard() {
+    const [isTaskInputOpen, setIsTaskInputOpen] = React.useState(false);
     const dailyTasks = [
         { name: "Dishes", time: "15 min", period: "morning" },
         { name: "Walk dog", time: "20 min", period: "afternoon" },
@@ -31,7 +34,12 @@ function Taskboard() {
         <>
             <Navbar />
             <h1 className="heading">Welcome Maria</h1>
-            <button className="addTaskButton">+ Add Task</button>           
+            <button
+                className="addTaskButton"
+                onClick={() => setIsTaskInputOpen(true)}
+            >
+                + Add Task
+            </button>         
             
             <div className="member centered-member widened-member">
                 <h2 className="memberName">Mom</h2>
@@ -61,6 +69,7 @@ function Taskboard() {
                 </div>
             </div>
             {showConfetti && <Confetti onComplete={() => setShowConfetti(false)} />}
+            {isTaskInputOpen && <TaskInput onClose={() => setIsTaskInputOpen(false)} />}
         </>
     )
 }
