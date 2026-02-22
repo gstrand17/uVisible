@@ -6,8 +6,11 @@ import afternoon from "../assets/afternoon.png"
 import Confetti from '../Confetti';
 import React, {useState} from 'react';
 import { supabase } from "../supabaseClient";
+import TaskInput from "./TaskInput";
+
 
 function Taskboard() {
+    const [isTaskInputOpen, setIsTaskInputOpen] = React.useState(false);
     const dailyTasks = [
         { name: "Dishes", time: "15 min", period: "morning" },
         { name: "Walk dog", time: "20 min", period: "afternoon" },
@@ -75,7 +78,12 @@ function Taskboard() {
                     ))}
                 </select>
             </div>
-            <button className="addTaskButton">+ Add Task</button>
+            <button
+                className="addTaskButton"
+                onClick={() => setIsTaskInputOpen(true)}
+            >
+                + Add Task
+            </button>  
 
             <div className="member centered-member widened-member">
                 <h2 className="memberName">Mom</h2>
@@ -108,7 +116,8 @@ function Taskboard() {
                     </div>
                 </div>
             </div>
-            {showConfetti && <Confetti onComplete={() => setShowConfetti(false)}/>}
+            {showConfetti && <Confetti onComplete={() => setShowConfetti(false)} />}
+            {isTaskInputOpen && <TaskInput onClose={() => setIsTaskInputOpen(false)} />}
         </>
     )
 }

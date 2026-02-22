@@ -150,11 +150,128 @@
     transition: transform 0.15s ease, box-shadow 0.15s ease;
     display: block;
     margin: 20px auto;  
-    
-    
 }
 
 .addTaskButton:hover {
     transform: translateY(-2px);
     box-shadow: 0 6px 18px rgba(124, 58, 237, 0.3);
+}
+
+/* ---------- MODAL OVERLAY ---------- */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  z-index: 9999;
+}
+
+/* ---------- MODAL CARD ---------- */
+.modal-content {
+  background: #f3e8ff;
+  padding: 1.5rem;
+  border-radius: 20px;
+
+  width: 480px;         /* slightly wider */
+  max-width: 92vw;
+
+  max-height: 85vh;     /* shorter vertically */
+  overflow-y: auto;     /* scroll only if really needed */
+
+  box-shadow: 0 10px 40px rgba(124, 58, 237, 0.25);
+
+  display: grid;
+  grid-template-columns: 1fr 1fr;  /* two columns for side-by-side inputs */
+  gap: 0.8rem 1rem;
+}
+
+/* ---------- TITLE ---------- */
+.modal-content h2 {
+  grid-column: span 2;
+  text-align: center;
+  color: #7c3aed;
+  margin-top: 0;           /* move title closer to top */
+  margin-bottom: 0.5rem;
+  font-size: 1.8rem;
+}
+
+/* ---------- LABELS ---------- */
+.modal-content label {
+  display: flex;
+  flex-direction: column;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #5b21b6;
+  gap: 0.4rem;
+}
+
+/* Make first label (Title) span full width */
+.modal-content label:first-of-type {
+  grid-column: span 2;
+}
+
+/* Make date label full width */
+.modal-content label:has(input[type="date"]) {
+  grid-column: span 2;
+}
+
+/* ---------- INPUTS + SELECTS ---------- */
+.modal-content input,
+.modal-content select {
+  padding: 0.85rem;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+  font-size: 0.95rem;
+  outline: none;
+  transition: border 0.2s, box-shadow 0.2s;
+}
+
+.modal-content input:focus,
+.modal-content select:focus {
+  border-color: #7c3aed;
+  box-shadow: 0 0 0 2px rgba(124, 58, 237, 0.2);
+}
+
+/* ---------- CHECKBOX ROW ---------- */
+.modal-content input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: #7c3aed;
+}
+
+.modal-content label input[type="checkbox"] + span {
+  margin-left: 6px;
+}
+
+/* ---------- BUTTON ROW ---------- */
+.modal-buttons {
+  grid-column: span 2;
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.cancelButton {
+  flex: 1;
+  background: #ddd;
+  border: none;
+  padding: 0.6rem;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background 0.2s;
+}
+
+.cancelButton:hover {
+  background: #cfcfcf;
+}
+
+.modal-buttons .addTaskButton {
+  flex: 1;
+  margin: 0;
 }
