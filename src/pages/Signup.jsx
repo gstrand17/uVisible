@@ -8,9 +8,13 @@ function Signup() {
     const navigate = useNavigate();
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
+    const [confirmPassword, setConfirmPassword] = useState("");
     const [members, setMembers] = useState([
-        { memName: "", is_adult: false, labor_limit: 1 }
+        {memName: "", is_adult: false, labor_limit: 1}
     ]);
+    const [fieldErrors, setFieldErrors] = useState({});
+    const [formError, setFormError] = useState("");
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     function updateMember(index, field, value) {
         const updated = [...members];
@@ -18,8 +22,28 @@ function Signup() {
         setMembers(updated);
     }
 
+    const validate = () => {
+        const errs = {};
+        setFormError("");
+        if (!username.trim()) errs.username = "Please enter a username";
+        if (!password) errs.password = "Please enter a password";
+        if (!confirmPassword) errs.confirmPassword = "Please confirm your password";
+        if (password && confirmPassword && password !== confirmPassword) {
+            errs.confirmPassword = "Passwords do not match";
+        }
+    members.forEach((m, i) => {
+        if (!m.memName.trim()) errs[`member-${i}-memName`] = "Please enter a name";
+    });
+    setFieldErrors(errs);
+    return Object.keys(errs).length === 0;
+};
+
     const handleSubmit = async (e) => {
         e.preventDefault();
+        if (!validate()) return;
+
+        setIsSubmitting(true);
+        setFormError("");
 
 // Insert into Users table
         const { data: userData, error: userError } = await supabase
@@ -35,7 +59,8 @@ function Signup() {
 
         if (userError) {
             console.error("USER INSERT ERROR:", userError);
-            alert(userError.message);
+            setFormError(userError.message || "Could not create account. Please try again.");
+            setIsSubmitting(false);
             return;
         }
 
@@ -54,12 +79,12 @@ function Signup() {
 
         if (memberError) {
             console.error("MEMBER INSERT ERROR:", memberError);
-            alert(memberError.message);
+            setFormError(memberError.message || "Could not add family members. Please try again.");
+            setIsSubmitting(false);
             return;
         }
+        setIsSubmitting(false);
         navigate("/Taskboard");
-
-        console.log("Signup successful");
     };
 
 
@@ -71,6 +96,7 @@ function Signup() {
 
             <div className = "login-container">
                 <form className="login-form" onSubmit={handleSubmit}>
+                    {formError && <div className="error-banner">{formError}</div>}
 
                     <div className="form-group">
                         <label>Choose Family Username</label>
@@ -78,17 +104,24 @@ function Signup() {
                                value={username}
                                onChange={(e) => setUsername(e.target.value)}
                                id='username'/>
+                        {fieldErrors.username && <div className="error">{fieldErrors.username}</div>}
                     </div>
                     <div className="form-group">
                         <label>Choose Family Password</label>
-                        <input type='text'
+                        <input type="password"
                                value={password}
                                onChange={(e) => setPassword(e.target.value)}
                                id='choose-password'/>
+                        {fieldErrors.password && <div className="error">{fieldErrors.password}</div>}
                     </div>
                     <div className="form-group">
                         <label>Confirm Family Password</label>
-                        <input type='text' id='confirm-password'/>
+                        <input type="password" id="confirm-password"
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}/>
+                        {fieldErrors.confirmPassword && (
+                            <div className="error">{fieldErrors.confirmPassword}</div>
+                        )}
                     </div>
 
 
@@ -103,6 +136,9 @@ function Signup() {
                                     id='name'
                                     onChange={(e) => updateMember(index, "memName", e.target.value)}
                                 />
+                                {fieldErrors[`member-${index}-memName`] && (
+                                    <div className="error">{fieldErrors[`member-${index}-memName`]}</div>
+                                )}
                             </div>
 
                             <div className="form-group">

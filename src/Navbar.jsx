@@ -1,16 +1,15 @@
 import { Link } from 'react-router-dom';
 import "./Navbar.css"
- import viteLogo from './assets/vite.svg'
+import logo from './assets/House-removebg-preview (1).png'
 
 function Navbar() {
     return(
         <>
         <nav className="nav">
         <ul className="list">
-            <li><Link to="/"><img src={viteLogo} className="nav-logo"/></Link></li>
             <li className="navbar-content"><Link to="/">uVisible</Link></li>
-            <li className="navbar-content"><Link to="/Login">Login</Link></li>
-            <li className="navbar-content"><Link to="/Taskboard">Taskboard</Link></li>
+            <li><img src={logo} className="nav-logo" alt="Logo" /></li>
+            <li className="navbar-content"><Link to="/"uVisible>Logout</Link></li>
         </ul>
     </nav>
         </>
