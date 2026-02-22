@@ -10,12 +10,10 @@ import TaskInput from "./TaskInput";
 
 function MemberSelectionModal({ members, onSelect }) {
     const randomColor = () =>
-        // eslint-disable-next-line react-hooks/purity
         "#" + Math.floor(Math.random()*16777215).toString(16);
 
     return (
         <div className="modal-overlay-user">
-
             <div className="modal-content-user">
                 <h2>Who's contributing?</h2>
                 <div className="circle-container">
@@ -38,28 +36,25 @@ function MemberSelectionModal({ members, onSelect }) {
     );
 }
 
-function MemberSelection({ member, periodImages, setShowConfetti }){
-    console.log("Rendering member:", member);
+function MemberSelection({ member, members, periodImages, setShowConfetti }) {
+
     const [assignedTasks, setAssignedTasks] = useState([]);
+    const [openMenu, setOpenMenu] = useState(null);
 
     useEffect(() => {
         const fetchAssignedTasks = async () => {
             const { data, error } = await supabase
                 .from("TaskAssigned")
                 .select(`
-          assignmentID,
-          complete,
-          TaskTemplate (
-            title,
-            duration,
-            time_day
-          )
-        `)
+                    assignmentID,
+                    complete,
+                    TaskTemplate (
+                        title,
+                        duration,
+                        time_day
+                    )
+                `)
                 .eq("memID", member.memID);
-            console.log("Member:", member.memName);
-            console.log("memID:", member.memID);
-            console.log("Assigned data:", data);
-            console.log("Error:", error);
 
             if (!error) {
                 setAssignedTasks(data);
@@ -74,47 +69,137 @@ function MemberSelection({ member, periodImages, setShowConfetti }){
     return (
         <div className="member centered-member widened-member">
             <h2 className="memberName">{member.memName}</h2>
+
             <div className="task-section">
                 <h3 className="frequency">To Do</h3>
+
                 <div className="task-list">
                     {assignedTasks.map((assignment) => {
                         const task = assignment.TaskTemplate;
 
                         return (
                             <div className="taskButtonWide" key={assignment.assignmentID}>
-                                <input type="checkbox"
-                                       className="taskCheckbox"
-                                       checked={assignment.complete}
-                                       onChange={() =>setShowConfetti(true)}/>
-                                <span className="taskName">{task.title}</span>
-                                <button className="timeButtonInner" style={{color: '#fff'}}>
-                                    {task.duration > 60
-                                         ? `${Math.floor(task.duration / 60)} hr ${task.duration % 60} min`
-                                         : `${task.duration} min`}
-                                </button>
-                                <img src={periodImages[task.time_day]}
-                                     alt={task.time_day}
-                                     className="periodIcon"/>
+                                {/* ✅ Dropdown wrapper */}
+                                <div style={{ position: "relative", width: "100%", display: "flex", alignItems: "center", gap: "12px" }}>
+                                    
+                                    <input
+                                        type="checkbox"
+                                        className="taskCheckbox"
+                                        checked={assignment.complete}
+                                        onChange={async () => {
+                                            const newValue = !assignment.complete;
+
+                                            const { error } = await supabase
+                                                .from("TaskAssigned")
+                                                .update({ complete: newValue })
+                                                .eq("assignmentID", assignment.assignmentID);
+
+                                            if (!error) {
+                                                setAssignedTasks(prev =>
+                                                    prev.map(t =>
+                                                        t.assignmentID === assignment.assignmentID
+                                                            ? { ...t, complete: newValue }
+                                                            : t
+                                                    )
+                                                );
+
+                                                if (newValue) {
+                                                    setShowConfetti(true);
+                                                }
+                                            } else {
+                                                console.error("Update error:", error);
+                                            }
+                                        }}
+                                    />
+
+                                    <span className="taskName">{task.title}</span>
+
+                                    <button className="timeButtonInner" style={{color: '#fff'}}>
+                                        {task.duration > 60
+                                            ? `${Math.floor(task.duration / 60)} hr ${task.duration % 60} min`
+                                            : `${task.duration} min`}
+                                    </button>
+
+                                    <img src={periodImages[task.time_day]} alt={task.time_day} className="periodIcon" />
+
+                                    {/* Three-dot menu */}
+                                    <span
+                                        style={{ cursor: "pointer", fontSize: "20px", padding: "0 6px" }}
+                                        onClick={() =>
+                                            setOpenMenu(openMenu === assignment.assignmentID ? null : assignment.assignmentID)
+                                        }
+                                    >
+                                        ⋮
+                                    </span>
+
+                                    {/* Dropdown menu */}
+                                    {openMenu === assignment.assignmentID && (
+                                        <div
+                                            style={{
+                                                position: "absolute", // ✅ absolute inside relative wrapper
+                                                top: "36px",
+                                                right: 0,
+                                                background: "#fff",
+                                                color: "#5b21b6",
+                                                borderRadius: "8px",
+                                                boxShadow: "0 6px 18px rgba(0,0,0,0.15)",
+                                                padding: "6px 0",
+                                                zIndex: 9999, // ✅ ensure on top
+                                                minWidth: "150px",
+                                                overflow: "hidden",
+                                            }}
+                                        >
+                                            <div style={{ padding: "6px 12px", fontWeight: 600 }}>
+                                                Reassign task to:
+                                            </div>
+
+                                            {members
+                                                .filter(m => m.memID !== member.memID)
+                                                .map(m => (
+                                                    <div
+                                                        key={m.memID}
+                                                        style={{ padding: "6px 12px", cursor: "pointer" }}
+                                                        onClick={async () => {
+                                                            await supabase
+                                                                .from("TaskAssigned")
+                                                                .update({ memID: m.memID })
+                                                                .eq("assignmentID", assignment.assignmentID);
+
+                                                            setAssignedTasks(prev =>
+                                                                prev.filter(t => t.assignmentID !== assignment.assignmentID)
+                                                            );
+
+                                                            setOpenMenu(null);
+                                                        }}
+                                                    >
+                                                        {m.memName}
+                                                    </div>
+                                                ))}
+                                        </div>
+                                    )}
+                                </div>
                             </div>
                         );
                     })}
                 </div>
             </div>
         </div>
-    )
+    );
 }
 
-
 function Taskboard() {
-    const [isTaskInputOpen, setIsTaskInputOpen] = React.useState(false);
+
+    const [isTaskInputOpen, setIsTaskInputOpen] = useState(false);
 
     const periodImages = {
         morning: morning,
         afternoon: afternoon,
         night: night
     };
-    const [showConfetti, setShowConfetti] = React.useState(false);
-    React.useEffect(() => {
+
+    const [showConfetti, setShowConfetti] = useState(false);
+
+    useEffect(() => {
         if (showConfetti) {
             const timer = setTimeout(() => setShowConfetti(false), 1800);
             return () => clearTimeout(timer);
@@ -126,7 +211,6 @@ function Taskboard() {
     useEffect(() => {
         const fetchMembers = async () => {
             const family = JSON.parse(localStorage.getItem("family"));
-
             if (!family) return;
 
             const { data, error } = await supabase
@@ -143,14 +227,15 @@ function Taskboard() {
 
         fetchMembers();
     }, []);
+
     const famData = JSON.parse(localStorage.getItem("family"));
     const famID = famData?.famID;
-
 
     const [activeMember, setActiveMember] = useState(() => {
         const stored = localStorage.getItem("activeMember");
         return stored ? JSON.parse(stored) : null;
     });
+
     const [showMemberModal, setShowMemberModal] = useState(!activeMember);
 
     const handleMemberSelect = (member) => {
@@ -162,24 +247,31 @@ function Taskboard() {
     return(
         <>
             <Navbar/>
+
             {showMemberModal && members.length > 0 && (
                 <MemberSelectionModal
                     members={members}
                     onSelect={handleMemberSelect}
                 />
             )}
-            <h1 className="heading">Welcome back, {activeMember?.memName}</h1>
+
+            <h1 className="heading">
+                Welcome back, {activeMember?.memName}
+            </h1>
+
             <button
                 className="addTaskButton"
                 onClick={() => setIsTaskInputOpen(true)}
             >
                 + Add Task
             </button>
+
             {activeMember && (
                 <>
                     <MemberSelection
                         key={activeMember.memID}
                         member={activeMember}
+                        members={members}
                         periodImages={periodImages}
                         setShowConfetti={setShowConfetti}
                     />
@@ -190,16 +282,24 @@ function Taskboard() {
                             <MemberSelection
                                 key={member.memID}
                                 member={member}
+                                members={members}
                                 periodImages={periodImages}
                                 setShowConfetti={setShowConfetti}
                             />
                         ))}
                 </>
             )}
-            {showConfetti && <Confetti onComplete={() => setShowConfetti(false)} />}
+
+            {showConfetti && (
+                <Confetti onComplete={() => setShowConfetti(false)} />
+            )}
+
             {isTaskInputOpen && (
-            <TaskInput onClose={() => setIsTaskInputOpen(false)} famID={famID} />
-    )}
+                <TaskInput
+                    onClose={() => setIsTaskInputOpen(false)}
+                    famID={famID}
+                />
+            )}
         </>
     )
 }
