@@ -1,4 +1,4 @@
-export function assignTasks(members, tasks) {
+export function assignTasks(members, newInstances, existingAssignments) {
     const labor_weight_map = {
         low: 1,
         medium: 2,
@@ -6,16 +6,35 @@ export function assignTasks(members, tasks) {
         extreme: 4
     };
 
-    // Clone members so we don’t mutate original objects
-    const updatedMembers = members.map(member => ({
-        ...member,
-        current_load_score: 0,
-        assigned_tasks: []
-    }));
+    //Initialize members with existing workload
+    const updatedMembers = members.map(member => {
+
+        const memberExisting = existingAssignments.filter(
+            a => a.memID === member.memID
+        );
+
+        const existingLoad = memberExisting.reduce((total, assignment) => {
+
+            const duration = assignment.TaskTemplate?.duration || 0;
+            const labor = assignment.TaskTemplate?.labor || "low";
+
+            const weight =
+                duration * labor_weight_map[labor];
+
+            return total + weight;
+
+        }, 0);
+
+        return {
+            ...member,
+            current_load_score: existingLoad,
+            assigned_tasks: []
+        };
+    });
 
     const unassignable_tasks = [];
 
-    for (const task of tasks) {
+    for (const task of newInstances) {
 
         const eligible_members = [];
 
@@ -46,6 +65,14 @@ export function assignTasks(members, tasks) {
 
         const task_weight =
             task.duration * labor_weight_map[task.labor];
+
+        console.log({
+            assignedTo: selected_member.memName,
+            taskTitle: task.title,
+            duration: task.duration,
+            labor: task.labor,
+            weight: task_weight
+        });
 
         selected_member.current_load_score += task_weight;
         selected_member.assigned_tasks.push(task);
