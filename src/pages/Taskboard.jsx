@@ -8,6 +8,35 @@ import React, { useState, useEffect } from 'react';
 import { supabase } from "../supabaseClient";
 import TaskInput from "./TaskInput";
 
+function MemberSelectionModal({ members, onSelect }) {
+    const randomColor = () =>
+        // eslint-disable-next-line react-hooks/purity
+        "#" + Math.floor(Math.random()*16777215).toString(16);
+
+    return (
+        <div className="modal-overlay-user">
+
+            <div className="modal-content-user">
+                <h2>Who's contributing?</h2>
+                <div className="circle-container">
+                    {members.map(member => (
+                        <div
+                            key={member.memID}
+                            className="memberCircleWrapper"
+                            onClick={() => onSelect(member)}
+                        >
+                            <div
+                                className="memberCircle"
+                                style={{ backgroundColor: randomColor() }}
+                            />
+                            <p>{member.memName}</p>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        </div>
+    );
+}
 
 function MemberSelection({ member, periodImages, setShowConfetti }){
     console.log("Rendering member:", member);
@@ -93,9 +122,8 @@ function Taskboard() {
     }, [showConfetti]);
 
     const [members, setMembers] = useState([]);
-    const [activeMember, setActiveMember] = useState(null);
 
-    React.useEffect(() => {
+    useEffect(() => {
         const fetchMembers = async () => {
             const family = JSON.parse(localStorage.getItem("family"));
 
@@ -119,41 +147,55 @@ function Taskboard() {
     const famID = famData?.famID;
 
 
+    const [activeMember, setActiveMember] = useState(() => {
+        const stored = localStorage.getItem("activeMember");
+        return stored ? JSON.parse(stored) : null;
+    });
+    const [showMemberModal, setShowMemberModal] = useState(!activeMember);
+
+    const handleMemberSelect = (member) => {
+        localStorage.setItem("activeMember", JSON.stringify(member));
+        setActiveMember(member);
+        setShowMemberModal(false);
+    };
+
     return(
         <>
             <Navbar/>
-            <h1 className="heading">Hello {activeMember?.memName}</h1>
-            <div style={{display: "flex", justifyContent: "center"}}>
-                <select style={{ width: "250px", padding: "8px" }}
-                    onChange={(e) => {
-                        const selected = members.find(
-                            m => m.memID === Number(e.target.value)
-                        );
-                        setActiveMember(selected);
-                    }}
-                >
-                    <option value="">Select Member</option>
-                    {members.map(member => (
-                        <option key={member.memID} value={member.memID}>
-                            {member.memName}
-                        </option>
-                    ))}
-                </select>
-            </div>
+            {showMemberModal && members.length > 0 && (
+                <MemberSelectionModal
+                    members={members}
+                    onSelect={handleMemberSelect}
+                />
+            )}
+            <h1 className="heading">Welcome back, {activeMember?.memName}</h1>
             <button
                 className="addTaskButton"
                 onClick={() => setIsTaskInputOpen(true)}
             >
                 + Add Task
             </button>
-            {members.map(member => (
-                <MemberSelection
-                    key={member.memID}
-                    member={member}
-                    periodImages={periodImages}
-                    setShowConfetti={setShowConfetti}
-                />
-            ))}
+            {activeMember && (
+                <>
+                    <MemberSelection
+                        key={activeMember.memID}
+                        member={activeMember}
+                        periodImages={periodImages}
+                        setShowConfetti={setShowConfetti}
+                    />
+
+                    {members
+                        .filter(m => m.memID !== activeMember.memID)
+                        .map(member => (
+                            <MemberSelection
+                                key={member.memID}
+                                member={member}
+                                periodImages={periodImages}
+                                setShowConfetti={setShowConfetti}
+                            />
+                        ))}
+                </>
+            )}
             {showConfetti && <Confetti onComplete={() => setShowConfetti(false)} />}
             {isTaskInputOpen && (
             <TaskInput onClose={() => setIsTaskInputOpen(false)} famID={famID} />

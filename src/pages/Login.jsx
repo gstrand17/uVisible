@@ -25,6 +25,7 @@ function Login() {
             return;
             }
         navigate("/Taskboard");
+        localStorage.removeItem("activeMember");
         };
     return(
         <>
