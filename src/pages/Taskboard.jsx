@@ -4,18 +4,78 @@ import night from "../assets/night.png"
 import morning from "../assets/morning.png"
 import afternoon from "../assets/afternoon.png"
 import Confetti from '../Confetti';
-import React, {useState} from 'react';
+import React, { useState, useEffect } from 'react';
 import { supabase } from "../supabaseClient";
 
+function MemberSelection({ member, periodImages, setShowConfetti }){
+    console.log("Rendering member:", member);
+    const [assignedTasks, setAssignedTasks] = useState([]);
+
+    useEffect(() => {
+        const fetchAssignedTasks = async () => {
+            const { data, error } = await supabase
+                .from("TaskAssigned")
+                .select(`
+          assignmentID,
+          complete,
+          TaskTemplate (
+            title,
+            duration,
+            time_day
+          )
+        `)
+                .eq("memID", member.memID);
+            console.log("Member:", member.memName);
+            console.log("memID:", member.memID);
+            console.log("Assigned data:", data);
+            console.log("Error:", error);
+
+            if (!error) {
+                setAssignedTasks(data);
+            } else {
+                console.error("ASSIGN FETCH ERROR:", error);
+            }
+        };
+
+        fetchAssignedTasks();
+    }, [member.memID]);
+
+    return (
+        <div className="member centered-member widened-member">
+            <h2 className="memberName">{member.memName}</h2>
+            <div className="task-section">
+                <h3 className="frequency">To Do</h3>
+                <div className="task-list">
+                    {assignedTasks.map((assignment) => {
+                        const task = assignment.TaskTemplate;
+
+                        return (
+                            <div className="taskButtonWide" key={assignment.assignmentID}>
+                                <input type="checkbox"
+                                       className="taskCheckbox"
+                                       checked={assignment.complete}
+                                       onChange={e => {
+                                           if (e.target.checked) setShowConfetti(true);
+                                       }}/>
+                                <span className="taskName">{task.title}</span>
+                                <button className="timeButtonInner"
+                                        style={{color: '#fff'}}>{task.duration}
+                                </button>
+                                <img src={periodImages[task.time_day]}
+                                     alt={task.time_day}
+                                     className="periodIcon"/>
+                            </div>
+                        );
+                    })}
+                </div>
+            </div>
+        </div>
+    )
+}
+
+
 function Taskboard() {
-    const dailyTasks = [
-        { name: "Dishes", time: "15 min", period: "morning" },
-        { name: "Walk dog", time: "20 min", period: "afternoon" },
-        { name: "Pick up kids from school and make sure they have their lunchbox", time: "30 min", period: "afternoon" }
-    ];
-    const weeklyTasks = [
-        { name: "Pick up dry cleaning", time: "10 min", period: "night" }
-    ];
+
     const periodImages = {
         morning: morning,
         afternoon: afternoon,
@@ -38,7 +98,7 @@ function Taskboard() {
 
             if (!family) return;
 
-            const { data, error } = await supabase
+            const {data, error} = await supabase
                 .from("Members")
                 .select("*")
                 .eq("familyID", family.famID);
@@ -52,7 +112,6 @@ function Taskboard() {
 
         fetchMembers();
     }, []);
-    console.log("Family from storage:", localStorage.getItem("family"));
 
     return(
         <>
@@ -76,38 +135,14 @@ function Taskboard() {
                 </select>
             </div>
             <button className="addTaskButton">+ Add Task</button>
-
-            <div className="member centered-member widened-member">
-                <h2 className="memberName">Mom</h2>
-                <div className="task-section">
-                <h3 className="frequency">Daily</h3>
-                    <div className="task-list">
-                        {dailyTasks.map((task, idx) => (
-                            <div className="taskButtonWide" key={idx}>
-                                <input type="checkbox" className="taskCheckbox" onChange={e => {
-                                    if (e.target.checked) setShowConfetti(true);
-                                }}/>
-                                <span className="taskName">{task.name}</span>
-                                <button className="timeButtonInner" style={{color: '#fff'}}>{task.time}</button>
-                                <img src={periodImages[task.period]} alt={task.period} className="periodIcon"/>
-                            </div>
-                        ))}
-                    </div>
-                    <h3 className="frequency">Weekly</h3>
-                    <div className="task-list">
-                        {weeklyTasks.map((task, idx) => (
-                            <div className="taskButtonWide" key={idx}>
-                                <input type="checkbox" className="taskCheckbox" onChange={e => {
-                                    if (e.target.checked) setShowConfetti(true);
-                                }}/>
-                                <span className="taskName">{task.name}</span>
-                                <button className="timeButtonInner" style={{color: '#fff'}}>{task.time}</button>
-                                <img src={periodImages[task.period]} alt={task.period} className="periodIcon"/>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            </div>
+            {members.map(member => (
+                <MemberSelection
+                    key={member.memID}
+                    member={member}
+                    periodImages={periodImages}
+                    setShowConfetti={setShowConfetti}
+                />
+            ))}
             {showConfetti && <Confetti onComplete={() => setShowConfetti(false)}/>}
         </>
     )
