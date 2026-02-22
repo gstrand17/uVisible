@@ -79,10 +79,10 @@
     transition: box-shadow 0.1s, transform 0.1s;
     color: #fff;
 }
-.taskButtonWide:hover {
-    box-shadow: 0 4px 16px rgba(124, 58, 237, 0.25);
-    transform: translateY(-2px) scale(1.02);
-}
+/*.taskButtonWide:hover {*/
+/*    box-shadow: 0 4px 16px rgba(124, 58, 237, 0.25);*/
+/*    transform: translateY(-2px) scale(1.02);*/
+/*}*/
 .taskCheckbox {
     margin-right: 18px;
     width: 28px;

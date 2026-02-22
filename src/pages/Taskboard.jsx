@@ -42,7 +42,7 @@ function MemberSelectionModal({ members, onSelect }) {
     );
 }
 
-function MemberSelection({ member, periodImages, batteryImages, setShowConfetti }){
+function MemberSelection({ member, members, periodImages, batteryImages, setShowConfetti }){
     console.log("Rendering member:", member);
     const [assignedTasks, setAssignedTasks] = useState([]);
     const [openMenu, setOpenMenu] = useState(null);
@@ -90,24 +90,7 @@ function MemberSelection({ member, periodImages, batteryImages, setShowConfetti 
 
                         return (
                             <div className="taskButtonWide" key={assignment.assignmentID}>
-                                <input type="checkbox"
-                                       className="taskCheckbox"
-                                       checked={assignment.complete}
-                                       onChange={() =>setShowConfetti(true)}/>
-                                <span className="taskName">{task.title}</span>
-                                <button className="timeButtonInner" style={{color: '#fff'}}>
-                                    {task.duration > 60
-                                         ? `${Math.floor(task.duration / 60)} hr ${task.duration % 60} min`
-                                         : `${task.duration} min`}
-                                </button>
-                                <img
-                                    src={batteryImages[task.labor]}
-                                    alt={task.labor}
-                                    className="batteryIcon"
-                                />
-                                <img src={periodImages[task.time_day]}
-                                     alt={task.time_day}
-                                     className="periodIcon"/>
+
                                 {/* ✅ Dropdown wrapper */}
                                 <div style={{ position: "relative", width: "100%", display: "flex", alignItems: "center", gap: "12px" }}>
 
@@ -148,6 +131,11 @@ function MemberSelection({ member, periodImages, batteryImages, setShowConfetti 
                                             ? `${Math.floor(task.duration / 60)} hr ${task.duration % 60} min`
                                             : `${task.duration} min`}
                                     </button>
+                                    <img
+                                        src={batteryImages[task.labor]}
+                                        alt={String(task.labor)}
+                                        className="batteryIcon"
+                                    />
 
                                     <img src={periodImages[task.time_day]} alt={task.time_day} className="periodIcon" />
 
