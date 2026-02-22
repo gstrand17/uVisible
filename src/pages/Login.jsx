@@ -1,6 +1,7 @@
 import Navbar from "../Navbar";
 import './Login.css'
 import {Link, useNavigate} from "react-router-dom";
+import viteLogo from "../assets/vite.svg";
 import {supabase} from "../supabaseClient.js";
 import { useState } from "react";
 
@@ -8,39 +9,21 @@ function Login() {
     const navigate = useNavigate();
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
-    const [fieldErrors, setFieldErrors] = useState({});
-    const [formError, setFormError] = useState("");
-    const [isSubmitting, setIsSubmitting] = useState(false);
-    const validateInputs = () => {
-        const errs = {};
-        setFormError("");
-        if (!username.trim()) errs.username = "Please enter your username";
-        if (!password) errs.password = "Please enter your password ";
-        setFieldErrors(errs);
-        return Object.keys(errs).length ===0;
-    };
     const handleLogin = async (e) => {
         e.preventDefault();
-        if (!validateInputs()) return;
-        setIsSubmitting(true);
-        setFormError("");
-
         const { data: userData, error } = await supabase
             .from("Users")
             .select("*")
             .eq("famUser", username)
             .single();
-        if (error || !userData) {
-            setFieldErrors((prev) => ({ ...prev, username: "Username not found." }));
-            setIsSubmitting(false);
+        if(error || !userData) {
+            alert("Username not found");
             return;
         }
         if (userData.pass_hash !== password) {
-            setFieldErrors((prev) => ({ ...prev, password: "Incorrect password." }));
-            setIsSubmitting(false);
+            alert("Password is incorrect");
             return;
-        }
-        setIsSubmitting(false);
+            }
         navigate("/Taskboard");
         };
     return(
@@ -51,16 +34,12 @@ function Login() {
 
             <div className = "login-container">
                 <form className = "login-form" onSubmit={handleLogin}>
-                    {formError && <div className="error-banner">{formError}</div>}
                     <div className="form-group">
                         <label>Family Username</label>
                         <input type='text'
                                id='username'
                                value={username}
                         onChange={(e) => setUsername(e.target.value)}/>
-                        {fieldErrors.username && (
-                            <div className="error">{fieldErrors.username}</div>
-                        )}
                     </div>
                     <div className="form-group">
                         <label>Password</label>
@@ -68,12 +47,9 @@ function Login() {
                                id='password'
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}/>
-                        {fieldErrors.password && (
-                            <div className="error">{fieldErrors.password}</div>
-                        )}
                     </div>
-                    <button className="signupbutton" type="submit" disabled={isSubmitting}>
-                        {isSubmitting ? "Logging in..." : "Login"}
+                    <button className="signupbutton" type="submit">
+                        Login
                         </button>
                 </form>
                 <Link className="signup" to="/Signup">Don't have a username? Sign up here!</Link>
@@ -83,4 +59,3 @@ function Login() {
 }
 
 export default Login;
-
