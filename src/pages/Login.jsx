@@ -1,6 +1,7 @@
 import Navbar from "../Navbar";
 import './Login.css'
 import {Link, useNavigate} from "react-router-dom";
+import viteLogo from "../assets/vite.svg";
 import {supabase} from "../supabaseClient.js";
 import { useState } from "react";
 
@@ -23,11 +24,6 @@ function Login() {
             alert("Password is incorrect");
             return;
             }
-
-        localStorage.setItem("family", JSON.stringify({
-            famID: userData.famID,
-            famUser: username
-        }));
         navigate("/Taskboard");
         localStorage.removeItem("activeMember");
         };

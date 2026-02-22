@@ -85,12 +85,12 @@ function MemberSelection({ member, periodImages, setShowConfetti }){
                                 <input type="checkbox"
                                        className="taskCheckbox"
                                        checked={assignment.complete}
-                                       onChange={e => {
-                                           if (e.target.checked) setShowConfetti(true);
-                                       }}/>
+                                       onChange={() =>setShowConfetti(true)}/>
                                 <span className="taskName">{task.title}</span>
-                                <button className="timeButtonInner"
-                                        style={{color: '#fff'}}>{task.duration}
+                                <button className="timeButtonInner" style={{color: '#fff'}}>
+                                    {task.duration > 60
+                                         ? `${Math.floor(task.duration / 60)} hr ${task.duration % 60} min`
+                                         : `${task.duration} min`}
                                 </button>
                                 <img src={periodImages[task.time_day]}
                                      alt={task.time_day}
@@ -143,6 +143,9 @@ function Taskboard() {
 
         fetchMembers();
     }, []);
+    const famData = JSON.parse(localStorage.getItem("family"));
+    const famID = famData?.famID;
+
 
     const [activeMember, setActiveMember] = useState(() => {
         const stored = localStorage.getItem("activeMember");
@@ -194,7 +197,9 @@ function Taskboard() {
                 </>
             )}
             {showConfetti && <Confetti onComplete={() => setShowConfetti(false)} />}
-            {isTaskInputOpen && <TaskInput onClose={() => setIsTaskInputOpen(false)} />}
+            {isTaskInputOpen && (
+            <TaskInput onClose={() => setIsTaskInputOpen(false)} famID={famID} />
+    )}
         </>
     )
 }
