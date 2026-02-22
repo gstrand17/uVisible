@@ -1,6 +1,6 @@
 import Navbar from "../Navbar";
 import './Login.css'
-import { useNavigate} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 import { useState } from "react";
 import { supabase } from "../supabaseClient";
 
@@ -21,7 +21,7 @@ function Signup() {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        // Insert into Users table
+// Insert into Users table
         const { data: userData, error: userError } = await supabase
             .from("Users")
             .insert([
@@ -41,13 +41,13 @@ function Signup() {
 
         const currFamID = userData.famID; // primary key
 
-        // Attach famID to each member
+// Attach famID to each member
         const membersRows = members.map(member => ({
             ...member,
             familyID: currFamID
         }));
 
-        // Insert into Members table
+// Insert into Members table
         const { error: memberError } = await supabase
             .from("Members")
             .insert(membersRows);
@@ -57,12 +57,9 @@ function Signup() {
             alert(memberError.message);
             return;
         }
-
-        localStorage.setItem("family", JSON.stringify({
-            famID: currFamID,
-            famUser: username
-        }));
         navigate("/Taskboard");
+
+        console.log("Signup successful");
     };
 
 
