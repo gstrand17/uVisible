@@ -29,6 +29,7 @@ function Login() {
             famUser: username
         }));
         navigate("/Taskboard");
+        localStorage.removeItem("activeMember");
         };
     return(
         <>
