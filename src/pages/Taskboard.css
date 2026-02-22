@@ -89,6 +89,16 @@
     height: 28px;
     accent-color: #22c55e; /* green for checked */
 }
+.dayOfWeek{
+    background: #7c3aed;
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    padding: 6px;
+    font-size: 1em;
+    font-weight: 500;
+    box-shadow: 0 2px 8px rgba(124, 58, 237, 0.08);
+}
 .taskName {
     flex: 1;
     padding-left: 8px;
@@ -199,7 +209,7 @@
   font-size: 1.8rem;
 }
 
-
+/* ---------- LABELS ---------- */
 .modal-content label {
   display: flex;
   flex-direction: column;
@@ -337,6 +347,19 @@
     border-radius: 50%;
 }
 
+.unassigned-subtitle {
+    text-align: center;
+    font-size: 0.95rem;
+    color: #666;
+    margin-top: -10px;
+    margin-bottom: 15px;
+}
+
+.distribute-button-wrapper {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
 /* Three-dot menu button */
 .taskDots {
     cursor: pointer;

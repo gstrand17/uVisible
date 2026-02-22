@@ -66,5 +66,5 @@ body{
 .nav-logo {
     height: 125px;  /* Adjust the image height */
     width: auto;   /* Maintain aspect ratio */
-    padding-right: 0px;
+    padding-right: 0;
 }
