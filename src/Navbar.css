@@ -9,14 +9,22 @@ body{
 
 
 .nav{
-    color: white;
+    background-color: white;
     position: fixed;
-    top: 0px;
+    top: 0;
+    left: 0;
     width: 100%;
+
+    height: 140px;       /* pick a fixed height that fits your logo */
+    z-index: 1000;       /* ensures content never covers it */
+
+    display: flex;
     justify-content: center;
     align-items: center;
+
     font-size: 1.3em;
 }
+
 
 .navbar-content{
     display: flex;
@@ -56,7 +64,7 @@ body{
 }
 
 .nav-logo {
-    height: 120px;  /* Adjust the image height */
+    height: 125px;  /* Adjust the image height */
     width: auto;   /* Maintain aspect ratio */
-    padding-right: 0px;
+    padding-right: 0;
 }
