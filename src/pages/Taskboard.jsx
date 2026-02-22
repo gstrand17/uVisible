@@ -78,7 +78,12 @@ function Taskboard() {
                     ))}
                 </select>
             </div>
-            <button className="addTaskButton">+ Add Task</button>
+            <button
+                className="addTaskButton"
+                onClick={() => setIsTaskInputOpen(true)}
+            >
+                + Add Task
+            </button>  
 
             <div className="member centered-member widened-member">
                 <h2 className="memberName">Mom</h2>
