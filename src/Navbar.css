@@ -9,7 +9,6 @@ body{
 
 
 .nav{
-    background-color: #881ec2;
     color: white;
     position: fixed;
     top: 0px;
@@ -22,18 +21,18 @@ body{
 .navbar-content{
     display: flex;
     justify-content: space-between;
-    color: white;
+    color: black;
     align-items: center;
     padding: 10px 20px;
     font-weight: bold;
 }
 .navbar-content a {
-    color: white;  
+    color: black;
     font-weight: bold;        /* Forces links inside navbar-content to white */
     text-decoration: none; /* Optional: remove underline */
 }
 .nav a {
-    color: white;
+    color: black;
     font-weight: bold;
     text-decoration: none;
 }
@@ -57,7 +56,7 @@ body{
 }
 
 .nav-logo {
-    height: 70px;  /* Adjust the image height */
+    height: 120px;  /* Adjust the image height */
     width: auto;   /* Maintain aspect ratio */
     padding-right: 0px;
 }

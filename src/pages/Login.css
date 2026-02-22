@@ -63,3 +63,15 @@ input {
     transform: translateY(-2px);
     box-shadow: 0 6px 18px rgba(124, 58, 237, 0.3);
 }
+
+.error {
+    color: red;
+    font-size: 12px;
+    margin-top: 4px;
+}
+
+.error-banner {
+    color: red;
+    font-size: 13px;
+    margin-bottom: 12px;
+}
